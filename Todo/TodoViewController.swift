@@ -16,6 +16,7 @@ class TodoViewController: UIViewController {
                             Todo(id: 4, title: "빨래하기 👕", isCompleted: false, category: "Life"),
                             Todo(id: 5, title: "우편함 정리하기 📮", isCompleted: false, category: "Life")]
     
+//    self.todoList = todoList.sorted(using: .id)
     var sections: [String: [Todo]] = [:]
     var userDefault = UserDefaults.standard
     @IBOutlet weak var TodoTableView: UITableView!
@@ -23,6 +24,16 @@ class TodoViewController: UIViewController {
     //MARK: Functions in TodoViewController
     override func viewDidLoad() {
         super.viewDidLoad()
+        setSection()
+        
+        TodoTableView.delegate = self
+        TodoTableView.dataSource = self
+        print(userDefault.dictionaryRepresentation())
+    }
+    
+    //MARK: Organize Sections
+    func setSection() {
+        sections = [:]
         
         for todo in todoList {
             if sections[todo.category] == nil {
@@ -33,9 +44,6 @@ class TodoViewController: UIViewController {
                 userDefault.setValue(todo.title, forKey: "\(todo.id)")
             }
         }
-        TodoTableView.delegate = self
-        TodoTableView.dataSource = self
-        print(userDefault.dictionaryRepresentation())
     }
 
     @IBAction func addTodo(_ sender: Any) {
@@ -51,11 +59,12 @@ class TodoViewController: UIViewController {
             if let title = alertForAddTodo.textFields?[0].text, !title.isEmpty, let cat = alertForAddTodo.textFields?[1].text, !cat.isEmpty {
                 let newItem = Todo(id: (todoList.last?.id ?? -1) + 1, title: title, isCompleted: false, category: cat)
                 todoList.append(newItem)
-                if sections.keys.contains(cat) {
-                    sections[cat]?.append(newItem)
-                } else {
-                    sections[cat] = [newItem]
-                }
+                setSection()
+//                if sections.keys.contains(cat) {
+//                    sections[cat]?.append(newItem)
+//                } else {
+//                    sections[cat] = [newItem]
+//                }
                 userDefault.set(title, forKey: "\(newItem.id)")
 //                TodoTableView.insertRows(at: [IndexPath(row: todoList.count-1, section: 0)], with: .automatic)
 //                print(newItem)
@@ -113,13 +122,13 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
             
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.reloadData()
-            print(indexPath)
-            print(todoList)
-            print(sections)
+            
             print(userDefault.dictionaryRepresentation())
         }
     }
     
+    
+    //MARK: Editing Cell
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let alertForModify = UIAlertController(title: "내용 수정", message: nil, preferredStyle: .alert)
@@ -136,23 +145,23 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
         }
         
         let confirmModifyAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             let category = Array(self.sections.keys)[indexPath.section]
             if var todoInSections = self.sections[category], let title = alertForModify.textFields?[0].text, let cat = alertForModify.textFields?[1].text, !title.isEmpty, !cat.isEmpty {
                 var todo = todoInSections[indexPath.row]
                 todo.title = title
                 todo.category = cat
-                
                 todoInSections[indexPath.row] = todo
+                
                 self.sections[category] = todoInSections
                 
                 userDefault.set(title, forKey: "\(todo.id)")
-                
-                let index = [IndexPath(row: indexPath.row, section: indexPath.section)]
+                setSection()
+//                let index = [IndexPath(row: indexPath.row, section: indexPath.section)]
 //                self.TodoTableView.reloadRows(at: index, with: .automatic)
-                self.TodoTableView.reloadData()
-                print(sections)
-                print(userDefault.value(forKey: "\(todo.id)") ?? "")
+                TodoTableView.reloadData()
+//                print(sections)
+//                print(userDefault.value(forKey: "\(todo.id)") ?? "")
             } else {
                 let noticeCannotModify = UIAlertController(title: "수정할 수 없습니다.", message: "빈 칸이 있는지 확인하세요.", preferredStyle: .alert)
                 let action = UIAlertAction(title: "확인", style: .default)

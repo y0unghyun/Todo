@@ -18,9 +18,12 @@ class CatViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        catImageView.image = UIImage(named: "CatLoadingImage")
     }
     override func viewWillAppear(_ animated: Bool) {
+        getJSONData()
+    }
+    @IBAction func refreshButtonTapped(_ sender: Any) {
         getJSONData()
     }
     

@@ -139,7 +139,13 @@
                         <viewLayoutGuide key="safeArea" id="Bym-TC-bdW"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" id="1Ab-tG-AFg"/>
+                    <navigationItem key="navigationItem" id="1Ab-tG-AFg">
+                        <barButtonItem key="rightBarButtonItem" image="arrow.clockwise" catalog="system" id="x4S-RB-DhV">
+                            <connections>
+                                <action selector="refreshButtonTapped:" destination="hG7-2g-EH2" id="K1o-IC-Wn4"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="catImageView" destination="geB-fW-pZ2" id="HX0-cd-LTa"/>
                     </connections>
@@ -168,6 +174,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.clockwise" catalog="system" width="113" height="128"/>
         <image name="dog.fill" catalog="system" width="128" height="100"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">

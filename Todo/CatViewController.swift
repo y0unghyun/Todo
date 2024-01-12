@@ -9,25 +9,42 @@ import UIKit
 
 class CatViewController: UIViewController {
     
+    var whichPetDoYouWantToDisplay: Bool = true
     var imageURL: String? {
         didSet {
-            getCatImage()
+            getPetImage()
         }
     }
-    @IBOutlet weak var catImageView: UIImageView!
+    @IBOutlet weak var petSelector: UISegmentedControl!
+    @IBOutlet weak var petImageView: UIImageView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        catImageView.image = UIImage(named: "CatLoadingImage")
+        petImageView.image = UIImage(named: "CatLoadingImage")
     }
     override func viewWillAppear(_ animated: Bool) {
-        getJSONData()
+        getJSONDataFromCatAPI()
     }
     @IBAction func refreshButtonTapped(_ sender: Any) {
-        getJSONData()
+        if whichPetDoYouWantToDisplay {
+            getJSONDataFromCatAPI()
+        } else {
+            getJSONDataFromDogAPI()
+        }
+    }
+    @IBAction func selectPetToDisplay(_ sender: Any) {
+        switch petSelector.selectedSegmentIndex {
+        case 0:
+            whichPetDoYouWantToDisplay = true
+        case 1:
+            whichPetDoYouWantToDisplay = false
+        default:
+            whichPetDoYouWantToDisplay = true
+        }
     }
     
-    func getJSONData() {
+    
+    func getJSONDataFromCatAPI() {
         let session = URLSession.shared
         if let catURL = URL(string: "https://api.thecatapi.com/v1/images/search") {
             let task = session.dataTask(with: catURL) { (data, response, error) in
@@ -35,7 +52,7 @@ class CatViewController: UIViewController {
                     print("Error: \(error)")
                 } else if let data = data {
                     do {
-                        let JSONData = try JSONDecoder().decode([Cat].self, from: data)
+                        let JSONData = try JSONDecoder().decode([Pet].self, from: data)
                         print("Received: ", JSONData)
                         self.imageURL = JSONData.first?.url
                     } catch {
@@ -47,7 +64,27 @@ class CatViewController: UIViewController {
         }
     }
     
-    func getCatImage() {
+    func getJSONDataFromDogAPI() {
+        let session = URLSession.shared
+        if let dogURL = URL(string: "https://api.thedogapi.com/v1/images/search") {
+            let task = session.dataTask(with: dogURL) { (data, response, error) in
+                if let error = error {
+                    print("Error: \(error)")
+                } else if let data = data {
+                    do {
+                        let JSONData = try JSONDecoder().decode([Pet].self, from: data)
+                        print("Received: ", JSONData)
+                        self.imageURL = JSONData.first?.url
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    func getPetImage() {
         let session = URLSession.shared
         guard let url = self.imageURL else { 
             print("Error: Empty imageURL")
@@ -59,7 +96,7 @@ class CatViewController: UIViewController {
                     print("Error: \(error)")
                 } else if let data = data {
                     DispatchQueue.main.async {
-                        self.catImageView.image = UIImage(data: data)
+                        self.petImageView.image = UIImage(data: data)
                     }
                 }
             }

@@ -14,7 +14,7 @@ struct Todo {
     var category: String
 }
 
-struct Cat: Decodable {
+struct Pet: Decodable {
     let id: String
     let url: String
     let width: Int

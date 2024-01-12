@@ -102,10 +102,10 @@
                                 <buttonConfiguration key="configuration" style="plain" title="완료한 일 확인하기"/>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MAE-wB-LXL">
-                                <rect key="frame" x="168" y="496" width="58" height="35"/>
+                                <rect key="frame" x="155" y="496" width="85" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" image="dog.fill" catalog="system"/>
+                                <buttonConfiguration key="configuration" style="filled" image="cat.fill" catalog="system" title="Cat"/>
                                 <connections>
                                     <segue destination="hG7-2g-EH2" kind="show" id="2Xu-Rv-9zl"/>
                                 </connections>
@@ -131,7 +131,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="geB-fW-pZ2">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="geB-fW-pZ2" customClass="petImageView">
                                 <rect key="frame" x="16" y="128" width="361" height="261"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
@@ -140,6 +140,18 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="1Ab-tG-AFg">
+                        <nil key="title"/>
+                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="AmV-Gr-Sqk">
+                            <rect key="frame" x="152" y="5.6666666666666679" width="89" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <segments>
+                                <segment title="Cat"/>
+                                <segment title="Dog"/>
+                            </segments>
+                            <connections>
+                                <action selector="selectPetToDisplay:" destination="hG7-2g-EH2" eventType="valueChanged" id="3gM-g6-mWb"/>
+                            </connections>
+                        </segmentedControl>
                         <barButtonItem key="rightBarButtonItem" image="arrow.clockwise" catalog="system" id="x4S-RB-DhV">
                             <connections>
                                 <action selector="refreshButtonTapped:" destination="hG7-2g-EH2" id="K1o-IC-Wn4"/>
@@ -147,7 +159,8 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="catImageView" destination="geB-fW-pZ2" id="HX0-cd-LTa"/>
+                        <outlet property="petImageView" destination="geB-fW-pZ2" id="fWn-fh-RxE"/>
+                        <outlet property="petSelector" destination="AmV-Gr-Sqk" id="BRF-1T-55e"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MIH-JL-OoY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -175,7 +188,7 @@
     </scenes>
     <resources>
         <image name="arrow.clockwise" catalog="system" width="113" height="128"/>
-        <image name="dog.fill" catalog="system" width="128" height="100"/>
+        <image name="cat.fill" catalog="system" width="128" height="102"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

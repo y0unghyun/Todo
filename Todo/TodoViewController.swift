@@ -16,7 +16,6 @@ class TodoViewController: UIViewController {
                             Todo(id: 4, title: "빨래하기 👕", isCompleted: false, category: "Life"),
                             Todo(id: 5, title: "우편함 정리하기 📮", isCompleted: false, category: "Life")]
     
-//    self.todoList = todoList.sorted(using: .id)
     var sections: [String: [Todo]] = [:]
     var userDefault = UserDefaults.standard
     @IBOutlet weak var TodoTableView: UITableView!
@@ -60,15 +59,7 @@ class TodoViewController: UIViewController {
                 let newItem = Todo(id: (todoList.last?.id ?? -1) + 1, title: title, isCompleted: false, category: cat)
                 todoList.append(newItem)
                 setSection()
-//                if sections.keys.contains(cat) {
-//                    sections[cat]?.append(newItem)
-//                } else {
-//                    sections[cat] = [newItem]
-//                }
                 userDefault.set(title, forKey: "\(newItem.id)")
-//                TodoTableView.insertRows(at: [IndexPath(row: todoList.count-1, section: 0)], with: .automatic)
-//                print(newItem)
-//                print(userDefault.value(forKey: "\(newItem.id)"))
                 TodoTableView.reloadData()
             } else {
                 let missingTitleAlert = UIAlertController(title: "내용이 모두 입력되지 않았습니다.", message: "빈 칸이 있는지 확인하십시오.", preferredStyle: .alert)
@@ -110,20 +101,29 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
             cell.todoLabel?.text = todo.title
             cell.isCompletedSwitch?.isOn = todo.isCompleted
         }
-        print(indexPath)
         return cell
     }
     
+    //MARK: Cell Delete Action
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            userDefault.removeObject(forKey: "\(todoList[indexPath.row].id)")
-            sections[todoList[indexPath.row].category]?.remove(at: indexPath.row)
-            todoList.remove(at: indexPath.row)
-            
-            tableView.deleteRows(at: [indexPath], with: .fade)
-            tableView.reloadData()
-            
-            print(userDefault.dictionaryRepresentation())
+            let category = Array(sections.keys)[indexPath.section]
+            if var todosInSection = sections[category] {
+                let deletedTodo = todosInSection.remove(at: indexPath.row)
+                if let indexInTodoList = todoList.firstIndex(where: { $0.id == deletedTodo.id }) {
+                    todoList.remove(at: indexInTodoList)
+                }
+                userDefault.removeObject(forKey: "\(deletedTodo.id)")
+
+                sections[category] = todosInSection
+
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                
+                if todosInSection.isEmpty {
+                    sections.removeValue(forKey: category)
+                }
+                tableView.reloadData()
+            }
         }
     }
     
@@ -131,6 +131,7 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
     //MARK: Editing Cell
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
         let alertForModify = UIAlertController(title: "내용 수정", message: nil, preferredStyle: .alert)
         
         let category = Array(sections.keys)[indexPath.section]
@@ -157,11 +158,7 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 userDefault.set(title, forKey: "\(todo.id)")
                 setSection()
-//                let index = [IndexPath(row: indexPath.row, section: indexPath.section)]
-//                self.TodoTableView.reloadRows(at: index, with: .automatic)
                 TodoTableView.reloadData()
-//                print(sections)
-//                print(userDefault.value(forKey: "\(todo.id)") ?? "")
             } else {
                 let noticeCannotModify = UIAlertController(title: "수정할 수 없습니다.", message: "빈 칸이 있는지 확인하세요.", preferredStyle: .alert)
                 let action = UIAlertAction(title: "확인", style: .default)

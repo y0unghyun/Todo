@@ -7,6 +7,9 @@
 
 import Foundation
 
+//MARK: Todo -> Codable로 구성 후 UserDefault에 JSON 형식으로 저장하는 것 고려
+// JSON으로 Encode하려면 Key-Value 쌍으로 정의하면 됨...
+// Key-Value 쌍으로 데이터를 정의하려면, Hashable, Equatable 에 대해서 공부해보면 좋음! -> 비교를 할 수 있도로 만들어 주는...
 struct Todo {
     var id: Int
     var title: String
@@ -40,5 +43,10 @@ struct Pet: Decodable {
         breeds = try? container.decode([String].self, forKey: .breeds)
         favourite = try? container.decode(String.self, forKey: .favourite)
     }
-    
+}
+
+struct User {
+    var id: UUID
+    var name: String
+    var age: Int
 }

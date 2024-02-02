@@ -7,8 +7,6 @@
 
 import UIKit
 
-
-
 class MainViewController: UIViewController {
 
     @IBOutlet weak var mainImageView: UIImageView!
@@ -29,9 +27,10 @@ class MainViewController: UIViewController {
                     print("Received Data: \(data)")
                 }
             }
-            
             task.resume()
         }
     }
-
+    @IBAction func moveToProfileVC(_ sender: Any) {
+        present(ProfileViewController(), animated: true)
+    }
 }

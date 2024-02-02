@@ -4,11 +4,14 @@
 //
 //  Created by 영현 on 1/9/24.
 //
+// CRUD 먼저 정확하게 구현하기!
 
 import UIKit
 
 class TodoViewController: UIViewController {
+    
     //MARK: Variables in TodoViewController
+    
     var todoList: [Todo] = [Todo(id: 0, title: "Swift 문법 살펴보기 📚", isCompleted: false, category: "Swift"),
                             Todo(id: 1, title: "Storyboard 살펴보기 🖥️", isCompleted: false, category: "Swift"),
                             Todo(id: 2, title: "장 보러 다녀오기 🥬", isCompleted: false, category: "Life"),
@@ -21,6 +24,7 @@ class TodoViewController: UIViewController {
     @IBOutlet weak var TodoTableView: UITableView!
     
     //MARK: Functions in TodoViewController
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setSection()
@@ -45,18 +49,22 @@ class TodoViewController: UIViewController {
         }
     }
 
+    
     @IBAction func addTodo(_ sender: Any) {
         let alertForAddTodo = UIAlertController(title: "Todo 추가", message: nil, preferredStyle: .alert)
+        
         alertForAddTodo.addTextField{ textField in
             textField.placeholder = "내용을 입력하세요."
         }
         alertForAddTodo.addTextField{ textField in
             textField.placeholder = "카테고리를 입력하세요."
         }
+        
         let confirmAction = UIAlertAction(title: "추가", style: .default){ [weak self] _ in
             guard let self else { return }
             if let title = alertForAddTodo.textFields?[0].text, !title.isEmpty, let cat = alertForAddTodo.textFields?[1].text, !cat.isEmpty {
                 let newItem = Todo(id: (todoList.last?.id ?? -1) + 1, title: title, isCompleted: false, category: cat)
+                
                 todoList.append(newItem)
                 setSection()
                 userDefault.set(title, forKey: "\(newItem.id)")
@@ -64,11 +72,14 @@ class TodoViewController: UIViewController {
             } else {
                 let missingTitleAlert = UIAlertController(title: "내용이 모두 입력되지 않았습니다.", message: "빈 칸이 있는지 확인하십시오.", preferredStyle: .alert)
                 let confirm = UIAlertAction(title: "확인", style: .default)
+                
                 missingTitleAlert.addAction(confirm)
                 present(missingTitleAlert, animated: true)
             }
         }
+        
         let rejectAction = UIAlertAction(title: "취소", style: .cancel)
+        
         alertForAddTodo.addAction(confirmAction)
         alertForAddTodo.addAction(rejectAction)
         present(alertForAddTodo, animated: true)
@@ -104,7 +115,7 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    //MARK: Cell Delete Action
+    //MARK: Delete Cell
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let category = Array(sections.keys)[indexPath.section]
@@ -114,9 +125,7 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
                     todoList.remove(at: indexInTodoList)
                 }
                 userDefault.removeObject(forKey: "\(deletedTodo.id)")
-
                 sections[category] = todosInSection
-
                 tableView.deleteRows(at: [indexPath], with: .fade)
                 
                 if todosInSection.isEmpty {
@@ -127,8 +136,7 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    
-    //MARK: Editing Cell
+    //MARK: Modifying Cell
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -144,7 +152,7 @@ extension TodoViewController: UITableViewDelegate, UITableViewDataSource {
                 textfield.text = todo.category
             }
         }
-        
+        // UIAlertAction, UIAlertController는 ViewController와 생명주기가 같으니... guard let self 구문은 성능 악화를 일으킬 수 있음...
         let confirmModifyAction = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
             guard let self else { return }
             let category = Array(self.sections.keys)[indexPath.section]
